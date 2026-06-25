@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMS Central - Reports & Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body class="text-gray-800 flex min-h-screen">
+
+    <!-- Sidebar -->
+    <div id="sidebar-container" class="w-64 fixed h-full z-20"></div>
+
+    <!-- Main Content -->
+    <div class="flex-1 ml-64 flex flex-col min-h-screen">
+        
+        <!-- Top Header -->
+        <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+            <h2 class="text-xl font-bold text-gray-900 tracking-tight">Admin Control Center</h2>
+            <div class="flex-1 max-w-md mx-8 relative">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                <input type="text" placeholder="Search..."
+                    class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#ab8038]/30 focus:border-[#ab8038] transition-all">
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="relative p-1.5 rounded-full hover:bg-gray-100 transition-colors">
+                    <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
+                </button>
+                <button class="relative p-1.5 rounded-full hover:bg-gray-100 transition-colors">
+                    <i data-lucide="help-circle" class="w-5 h-5 text-gray-600"></i>
+                </button>
+                <div class="flex items-center gap-3 border-l pl-5 border-gray-200">
+                    <div class="text-right">
+                        <p class="text-sm font-bold text-gray-900 leading-none">Admin</p>
+                        <p class="text-[11px] text-gray-500 mt-1 font-medium">Support</p>
+                    </div>
+                    <img src="https://i.pravatar.cc/100?img=12"
+                        class="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100">
+                </div>
+            </div>
+        </header>
+
+        <main class="p-8 flex-1">
+            <!-- Page Header & Filters Row -->
+            <div class="flex flex-col md:flex-row md:justify-between md:items-end gap-6 mb-8">
+                <div>
+                    <h1 class="text-[28px] font-bold text-gray-900 tracking-tight mb-1">Reports & Analytics</h1>
+                    <p class="text-gray-500 text-sm">High-level financial and enrollment metrics.</p>
+                </div>
+                
+                <div class="flex items-center gap-2">
+                    <div class="relative">
+                        <select class="appearance-none bg-white border border-gray-200 text-gray-700 text-sm rounded-lg pl-9 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-[#ab8038]/30 focus:border-[#ab8038] font-medium cursor-pointer">
+                            <option>This Year</option>
+                            <option>Last Year</option>
+                        </select>
+                        <i data-lucide="calendar" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"></i>
+                    </div>
+                    
+                    <div class="relative">
+                        <select class="appearance-none bg-white border border-gray-200 text-gray-700 text-sm rounded-lg pl-9 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-[#ab8038]/30 focus:border-[#ab8038] font-medium cursor-pointer">
+                            <option>All Companies</option>
+                            <option>Acme Corp</option>
+                            <option>Stark Industries</option>
+                        </select>
+                        <i data-lucide="building-2" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"></i>
+                    </div>
+
+                    <div class="relative">
+                        <select class="appearance-none bg-white border border-gray-200 text-gray-700 text-sm rounded-lg pl-9 pr-8 py-2 focus:outline-none focus:ring-2 focus:ring-[#ab8038]/30 focus:border-[#ab8038] font-medium cursor-pointer">
+                            <option>All Courses</option>
+                            <option>Leadership</option>
+                            <option>Safety</option>
+                        </select>
+                        <i data-lucide="graduation-cap" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                        <i data-lucide="chevron-down" class="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none"></i>
+                    </div>
+
+                    <button class="flex items-center gap-2 px-5 py-2 bg-[#0a0e17] hover:bg-[#1a2333] text-white rounded-lg text-sm font-semibold transition-colors shadow-md">
+                        <i data-lucide="filter" class="w-4 h-4"></i> Apply
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Total Lifetime Revenue -->
+                <div class="bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm flex flex-col justify-between min-h-[130px]">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">TOTAL LIFETIME REVENUE</h3>
+                        <div class="w-9 h-9 rounded bg-gray-50 flex items-center justify-center">
+                            <i data-lucide="banknote" class="w-5 h-5 text-gray-300"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <p class="text-[36px] font-extrabold text-gray-900 leading-none mb-1.5">$4.2M</p>
+                        <p class="text-sm text-emerald-600 font-medium flex items-center gap-1"><i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +12.5% vs last year</p>
+                    </div>
+                </div>
+
+                <!-- Certificates Issued -->
+                <div class="bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm flex flex-col justify-between min-h-[130px]">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">CERTIFICATES ISSUED</h3>
+                        <div class="w-9 h-9 rounded bg-gray-50 flex items-center justify-center">
+                            <i data-lucide="award" class="w-5 h-5 text-gray-300"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <p class="text-[36px] font-extrabold text-gray-900 leading-none mb-1.5">12,450</p>
+                        <p class="text-sm text-emerald-600 font-medium flex items-center gap-1"><i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +8.2% vs last year</p>
+                    </div>
+                </div>
+
+                <!-- Pending Payments -->
+                <div class="bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm flex flex-col justify-between min-h-[130px]">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">PENDING PAYMENTS</h3>
+                        <div class="w-9 h-9 rounded bg-gray-50 flex items-center justify-center">
+                            <i data-lucide="clipboard-list" class="w-5 h-5 text-gray-300"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <p class="text-[36px] font-extrabold text-gray-900 leading-none mb-1.5">$185k</p>
+                        <p class="text-sm text-gray-500 flex items-center gap-1"><i data-lucide="clock" class="w-3.5 h-3.5 text-gray-400"></i> Across 42 invoices</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts Top Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                <!-- Bar Chart: Revenue by Month -->
+                <div class="lg:col-span-2 bg-white rounded-xl border border-gray-200/80 shadow-sm p-6 flex flex-col">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-base font-bold text-gray-900">Revenue by Month (Last 6 Months)</h3>
+                        <button class="text-gray-400 hover:text-gray-600 transition-colors">
+                            <i data-lucide="more-horizontal" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <div class="relative flex-1 w-full h-[250px]">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Donut Chart: Popular Courses -->
+                <div class="bg-white rounded-xl border border-gray-200/80 shadow-sm p-6 flex flex-col">
+                    <div class="flex items-center justify-between mb-2">
+                        <h3 class="text-base font-bold text-gray-900">Popular Courses</h3>
+                        <button class="text-gray-400 hover:text-gray-600 transition-colors">
+                            <i data-lucide="more-horizontal" class="w-5 h-5"></i>
+                        </button>
+                    </div>
+                    <div class="relative flex-1 w-full h-[220px] flex items-center justify-center">
+                        <canvas id="coursesChart"></canvas>
+                    </div>
+                    <!-- Custom Legend will be injected here by Chart.js or HTML -->
+                    <div id="coursesLegend" class="mt-4 flex flex-wrap justify-center gap-x-4 gap-y-2"></div>
+                </div>
+            </div>
+
+            <!-- Chart Bottom: Trainee Enrollment Trend -->
+            <div class="bg-white rounded-xl border border-gray-200/80 shadow-sm p-6 flex flex-col">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-base font-bold text-gray-900">Trainee Enrollment Trend (YTD)</h3>
+                    <button class="text-gray-400 hover:text-gray-600 transition-colors">
+                        <i data-lucide="more-horizontal" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                <div class="relative w-full h-[280px]">
+                    <canvas id="enrollmentChart"></canvas>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/reports.js"></script>
+    <script src="/js/inject-sidebar.js"></script>
+</body>
+
+</html>

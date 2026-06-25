@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMS Central - Excel Sheets</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body class="text-gray-800 flex min-h-screen">
+
+    <div id="sidebar-container" class="w-64 fixed h-full z-20"></div>
+
+    <div class="flex-1 ml-64 flex flex-col min-h-screen">
+        <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+            <h2 class="text-xl font-bold text-gray-900 tracking-tight">Admin Control Center</h2>
+            <div class="flex-1 max-w-md mx-8 relative">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                <input id="sheet-search" type="text" placeholder="Search in sheet rows..."
+                    class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#ab8038]/30 focus:border-[#ab8038] transition-all">
+            </div>
+            <div class="flex items-center gap-3 border-l pl-5 border-gray-200">
+                <p class="text-sm font-bold text-gray-900">Admin</p>
+                <img src="https://i.pravatar.cc/100?img=33" class="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100">
+            </div>
+        </header>
+
+        <main class="p-8 flex-1">
+            <!-- Page Header -->
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Excel Sheets Manager</h1>
+                    <p class="text-gray-500 mt-1 text-sm">View, edit, and manage all uploaded spreadsheet data.</p>
+                </div>
+                <button id="btn-upload-new" class="flex items-center gap-2 px-4 py-2.5 bg-[#ab8038] hover:bg-[#96702f] text-white rounded-lg text-sm font-bold shadow-sm transition-colors">
+                    <i data-lucide="upload" class="w-4 h-4"></i> Upload New Sheet
+                </button>
+            </div>
+
+            <!-- Sheets List -->
+            <div id="sheets-list-section">
+                <div id="sheets-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8"></div>
+            </div>
+
+            <!-- Sheet Viewer -->
+            <div id="sheet-viewer" class="hidden">
+                <div class="flex items-center gap-4 mb-6">
+                    <button id="btn-back-to-list" class="flex items-center gap-2 px-3 py-2 border border-gray-200 text-gray-600 rounded-lg text-sm font-semibold hover:bg-gray-50 transition-colors">
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i> All Sheets
+                    </button>
+                    <div>
+                        <h2 id="viewer-title" class="text-xl font-bold text-gray-900">Sheet Name</h2>
+                        <p id="viewer-meta" class="text-xs text-gray-400"></p>
+                    </div>
+                    <div class="ml-auto flex items-center gap-3">
+                        <div class="relative">
+                            <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                            <input id="row-search" type="text" placeholder="Search rows..."
+                                class="pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#ab8038]/30">
+                        </div>
+                        <button id="btn-add-row" class="flex items-center gap-2 px-4 py-2.5 bg-[#ab8038] hover:bg-[#96702f] text-white rounded-lg text-sm font-bold shadow-sm transition-colors">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Add Row
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm">
+                            <thead id="sheet-thead" class="bg-gray-50 border-b border-gray-100"></thead>
+                            <tbody id="sheet-tbody" class="divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Upload Modal -->
+    <div id="upload-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden">
+        <div class="bg-white w-full max-w-md rounded-xl shadow-2xl border border-gray-100 p-6 relative mx-4">
+            <button id="btn-close-upload" class="absolute right-4 top-4 text-gray-400 hover:text-gray-600 p-1 rounded-lg hover:bg-gray-50">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-lg bg-amber-50 flex items-center justify-center text-[#ab8038]">
+                    <i data-lucide="file-spreadsheet" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-gray-900">Upload Excel Sheet</h3>
+                    <p class="text-xs text-gray-500">Any structure is accepted (.xlsx, .xls)</p>
+                </div>
+            </div>
+            <form id="modal-upload-form" class="space-y-4">
+                <div class="border-2 border-dashed border-gray-200 hover:border-[#ab8038]/60 bg-gray-50/50 rounded-xl p-8 text-center relative cursor-pointer group transition-colors">
+                    <input type="file" id="excel-file-input" accept=".xlsx,.xls" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10">
+                    <div class="flex flex-col items-center gap-2">
+                        <div class="p-3 bg-gray-50 group-hover:bg-amber-50 text-gray-400 group-hover:text-[#ab8038] rounded-xl transition-colors">
+                            <i data-lucide="upload-cloud" class="w-6 h-6"></i>
+                        </div>
+                        <p class="text-xs font-bold text-gray-700">Click to upload or drag &amp; drop</p>
+                        <p class="text-[10px] text-gray-400">Excel files up to 10MB</p>
+                    </div>
+                </div>
+                <div id="selected-file-name" class="hidden text-xs font-semibold text-gray-600 bg-gray-50 p-2.5 rounded-lg border border-gray-100 flex items-center gap-2">
+                    <i data-lucide="file" class="w-3.5 h-3.5 text-[#ab8038]"></i>
+                    <span>file.xlsx</span>
+                </div>
+                <div id="upload-status" class="hidden text-xs p-3 rounded-lg text-center font-semibold"></div>
+                <div class="flex items-center justify-end gap-3 pt-2">
+                    <button type="button" id="btn-cancel-modal" class="px-4 py-2 border border-gray-200 rounded-xl text-xs font-semibold text-gray-600 hover:bg-gray-50">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-[#ab8038] hover:bg-[#946e2f] text-white text-xs font-bold rounded-xl shadow-md">Upload Sheet</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script type="module" src="/js/spreadsheets.js"></script>
+    <script src="/js/inject-sidebar.js"></script>
+</body>
+</html>

@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMS Central - Invoices & Finance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body class="text-gray-800 flex min-h-screen">
+
+    <!-- Sidebar -->
+    <div id="sidebar-container" class="w-64 fixed h-full z-20"></div>
+
+    <!-- Main Content -->
+    <div class="flex-1 ml-64 flex flex-col min-h-screen">
+
+        <!-- Top Header -->
+        <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+            <h2 class="text-xl font-bold text-gray-900 tracking-tight">Admin Control Center</h2>
+            <div class="flex-1 max-w-md mx-8 relative">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                <input type="text" placeholder="Search invoices..."
+                    class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#ab8038]/30 focus:border-[#ab8038] transition-all">
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="relative p-1.5 rounded-full hover:bg-gray-100 transition-colors">
+                    <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
+                </button>
+                <button class="relative p-1.5 rounded-full hover:bg-gray-100 transition-colors">
+                    <i data-lucide="help-circle" class="w-5 h-5 text-gray-600"></i>
+                </button>
+                <div class="flex items-center gap-3 border-l pl-5 border-gray-200">
+                    <div class="text-right">
+                        <p class="text-sm font-bold text-gray-900 leading-none">Admin</p>
+                        <p class="text-[11px] text-gray-500 mt-1 font-medium">Support</p>
+                    </div>
+                    <img src="https://i.pravatar.cc/100?img=12" class="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100">
+                </div>
+            </div>
+        </header>
+
+        <main class="p-8 flex-1">
+            <!-- Page Header -->
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h1 class="text-[28px] font-bold text-gray-900 tracking-tight mb-1">Invoices & Finance</h1>
+                    <p class="text-gray-500 text-sm">Manage billing, track payments, and review financial status.</p>
+                </div>
+                <button class="flex items-center gap-2 px-5 py-2.5 bg-[#ab8038] hover:bg-[#96702f] text-white rounded-lg text-sm font-semibold transition-colors shadow-md">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Generate New Invoice
+                </button>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <!-- Total Receivables -->
+                <div class="bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[130px]">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">TOTAL RECEIVABLES</h3>
+                        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                            <i data-lucide="wallet" class="w-4 h-4 text-gray-600"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-[32px] font-extrabold text-gray-900 leading-none mb-1">$124,500.00</p>
+                        <p class="text-sm text-gray-500 flex items-center gap-1"><i data-lucide="trending-up" class="w-3.5 h-3.5 text-[#ab8038]"></i> +12% from last month</p>
+                    </div>
+                </div>
+
+                <!-- Overdue Payments -->
+                <div class="bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[130px]">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">OVERDUE PAYMENTS</h3>
+                        <div class="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center border border-red-100">
+                            <i data-lucide="alert-triangle" class="w-4 h-4 text-red-600"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-[32px] font-extrabold text-red-600 leading-none mb-1">$18,250.00</p>
+                        <p class="text-sm text-gray-500"><span class="font-bold text-red-600">5 Invoices</span> require immediate action</p>
+                    </div>
+                </div>
+
+                <!-- Collected This Month -->
+                <div class="bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[130px]">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">COLLECTED THIS MONTH</h3>
+                        <div class="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center border border-emerald-100">
+                            <i data-lucide="check-circle" class="w-4 h-4 text-emerald-600"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <p class="text-[32px] font-extrabold text-gray-900 leading-none mb-1">$86,420.00</p>
+                        <p class="text-sm text-emerald-600 font-medium flex items-center gap-1"><i data-lucide="trending-up" class="w-3.5 h-3.5"></i> +5% vs target</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Invoices Table Area -->
+            <div class="bg-white rounded-xl border border-gray-200/80 shadow-sm flex flex-col overflow-hidden">
+                <!-- Table Header Options -->
+                <div class="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
+                    <h2 class="text-lg font-bold text-gray-900">Recent Invoices</h2>
+                    <div class="flex gap-2">
+                        <button class="flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg text-sm font-semibold transition-colors">
+                            <i data-lucide="filter" class="w-4 h-4"></i> Filter
+                        </button>
+                        <button class="flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg text-sm font-semibold transition-colors">
+                            <i data-lucide="download" class="w-4 h-4"></i> Export
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left whitespace-nowrap text-sm">
+                        <thead class="bg-gray-50/50 border-b border-gray-100">
+                            <tr>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">INVOICE ID</th>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">ISSUED TO</th>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">DATE ISSUED</th>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">DUE DATE</th>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">TOTAL AMOUNT</th>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">AMOUNT PAID</th>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">STATUS</th>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-right">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="invoices-table-body" class="divide-y divide-gray-50">
+                            <!-- Injected via invoices.js -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination Footer -->
+                <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-white text-sm">
+                    <span class="text-gray-500">Showing 1 to 5 of 42 entries</span>
+                    <div class="flex gap-1">
+                        <button class="px-3 py-1.5 border border-gray-200 rounded-md text-gray-500 hover:bg-gray-50 font-medium">Previous</button>
+                        <button class="px-3 py-1.5 border border-gray-900 bg-gray-900 text-white rounded-md font-medium">1</button>
+                        <button class="px-3 py-1.5 border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 font-medium">2</button>
+                        <button class="px-3 py-1.5 border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 font-medium">3</button>
+                        <span class="px-2 py-1.5 text-gray-400">...</span>
+                        <button class="px-3 py-1.5 border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 font-medium">Next</button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/invoices.js"></script>
+    <script src="/js/inject-sidebar.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMS Central - Courses & Attendance</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body class="text-gray-800 flex min-h-screen">
+
+    <div id="sidebar-container" class="w-64 fixed h-full z-20"></div>
+
+    <div class="flex-1 ml-64 flex flex-col min-h-screen">
+
+        <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+            <h2 class="text-xl font-bold text-gray-900 tracking-tight">Admin Control Center</h2>
+            <div class="flex-1 max-w-md mx-8 relative">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                <input type="text" placeholder="Search courses, trainees, or trainers..."
+                    class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#ab8038]/30 focus:border-[#ab8038] transition-all">
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="relative p-1.5 rounded-full hover:bg-gray-100 transition-colors">
+                    <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
+                </button>
+                <button class="relative p-1.5 rounded-full hover:bg-gray-100 transition-colors">
+                    <i data-lucide="help-circle" class="w-5 h-5 text-gray-600"></i>
+                </button>
+                <div class="flex items-center gap-3 border-l pl-5 border-gray-200">
+                    <div class="text-right">
+                        <p class="text-sm font-bold text-gray-900 leading-none">Admin</p>
+                        <p class="text-[11px] text-gray-500 mt-1 font-medium">Support</p>
+                    </div>
+                    <img src="https://i.pravatar.cc/100?img=12"
+                        class="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100">
+                </div>
+            </div>
+        </header>
+
+        <main class="p-8 flex-1">
+            <!-- Header Section -->
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h1 class="text-[28px] font-bold text-gray-900 tracking-tight mb-1">Courses & Attendance</h1>
+                    <p class="text-gray-500 text-sm">Manage active training sessions, trainer assignments, and daily attendance logs.</p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <button id="btn-add-course" class="flex items-center gap-2 px-4 py-2.5 bg-[#ab8038] hover:bg-[#96702f] text-white rounded-lg text-sm font-bold shadow-sm transition-colors">
+                        <i data-lucide="plus" class="w-4 h-4"></i> Add Course
+                    </button>
+                    <button class="flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-700 bg-white hover:bg-gray-50 rounded-lg text-sm font-semibold transition-colors shadow-sm">
+                        <i data-lucide="download" class="w-4 h-4"></i> Export Report
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div class="bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[130px]">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-[15px] font-bold text-gray-800">Ongoing Courses</h3>
+                        <div class="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center">
+                            <i data-lucide="play-circle" class="w-5 h-5 text-gray-600"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-4">
+                        <span id="stat-ongoing-courses" class="text-[40px] font-extrabold text-gray-900 leading-none">24</span>
+                        <span class="text-sm text-gray-500 flex items-center gap-1"><i data-lucide="arrow-up" class="w-3 h-3 text-gray-400"></i>12% this month</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[130px]">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-[15px] font-bold text-gray-800">Upcoming Scheduled</h3>
+                        <div class="w-10 h-10 rounded-full bg-amber-50 flex items-center justify-center">
+                            <i data-lucide="calendar-days" class="w-5 h-5 text-[#ab8038]"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-4">
+                        <span id="stat-upcoming-scheduled" class="text-[40px] font-extrabold text-gray-900 leading-none">18</span>
+                        <span class="text-sm text-gray-500">Scheduled for Q3</span>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[130px]">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-[15px] font-bold text-gray-800">Assigned Trainers</h3>
+                        <div class="w-10 h-10 rounded-full bg-blue-50 flex items-center justify-center">
+                            <i data-lucide="users-2" class="w-5 h-5 text-blue-600"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-baseline gap-2 mt-4">
+                        <span id="stat-assigned-trainers" class="text-[40px] font-extrabold text-gray-900 leading-none">42</span>
+                        <span class="text-sm text-gray-500">Active this week</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Course Roster -->
+            <div class="mb-8">
+                <div class="flex items-center justify-between mb-5">
+                    <h2 class="text-[17px] font-bold text-gray-900">Active Course Roster</h2>
+                    <div class="flex gap-1 bg-gray-100 p-1 rounded-lg">
+                        <button class="p-1 bg-white shadow-sm rounded text-gray-800"><i data-lucide="layout-grid" class="w-4 h-4"></i></button>
+                        <button class="p-1 text-gray-400 hover:text-gray-600"><i data-lucide="list" class="w-4 h-4"></i></button>
+                    </div>
+                </div>
+
+                <div id="courses-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Cards are populated by app.js -->
+                </div>
+            </div>
+
+            <!-- Attendance Panel (Hidden initially, shown by app.js on click) -->
+            <div id="attendance-panel" class="hidden bg-white rounded-xl border border-gray-200/80 shadow-sm overflow-hidden mb-8 mt-10">
+                <div class="p-6 border-b border-gray-100 flex items-start justify-between bg-white">
+                    <div>
+                        <div class="flex items-center gap-2 mb-2">
+                            <span class="text-[10px] font-bold tracking-wider text-amber-700 uppercase">ACTIVE SESSION</span>
+                            <span class="w-1.5 h-1.5 rounded-full bg-amber-600"></span>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-900 mb-2">Attendance: <span id="attendance-course-name">Advanced Safety Procedures</span></h2>
+                        <div class="flex items-center gap-2 text-sm text-gray-600">
+                            <span class="font-medium text-gray-500">Date:</span>
+                            <span class="font-bold text-gray-800">Today, Oct 24, 2023</span>
+                            <span class="mx-1 text-gray-300">|</span>
+                            <span class="font-medium text-gray-500">Trainer:</span>
+                            <span id="attendance-trainer" class="text-gray-700">Dr. Sarah Jenkins</span>
+                        </div>
+                    </div>
+                    <div class="bg-gray-100 px-4 py-2.5 rounded-lg text-center">
+                        <p class="text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-0.5">PRESENT</p>
+                        <p class="text-xl font-bold text-gray-900 leading-none" id="attendance-present-count">24<span class="text-sm text-gray-400 font-medium">/28</span></p>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-sm whitespace-nowrap">
+                        <thead class="bg-gray-50/50 border-b border-gray-100">
+                            <tr>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Trainee Name</th>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Company</th>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">Status (Today)</th>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendance-table-body">
+                            <!-- Table populated by app.js -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="p-5 border-t border-gray-100 bg-gray-50/30 flex items-center justify-between">
+                    <button class="text-sm font-semibold text-gray-600 hover:text-gray-900 transition-colors">Cancel</button>
+                    <button id="save-attendance-btn" onclick="window.saveAttendance()" class="flex items-center gap-2 px-5 py-2.5 bg-[#0a0e17] hover:bg-[#1a2333] text-white rounded-lg text-sm font-bold shadow-md transition-all">
+                        <i data-lucide="save" class="w-4 h-4"></i> Save Attendance
+                    </button>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+    <script src="/js/inject-sidebar.js"></script>
+
+</html>

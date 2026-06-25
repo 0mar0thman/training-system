@@ -1,0 +1,163 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+enum Role {
+  ADMIN
+  FINANCE
+  SALES
+  TRAINER
+  SUPERVISOR
+}
+
+enum AttendanceStatus {
+  REGISTERED
+  PRESENT
+  ABSENT
+  LATE
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  PARTIALLY_PAID
+  OVERDUE
+  CANCELLED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  password  String
+  name      String
+  role      Role     @default(SUPERVISOR)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Company {
+  id            String    @id @default(uuid())
+  name          String    @unique
+  contactPerson String?   @default("—")
+  email         String?   @default("—")
+  paymentStatus String    @default("Active")
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  trainees      Trainee[]
+  courses       Course[]
+  invoices      Invoice[]
+
+  @@map("companies")
+}
+
+model Trainer {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  email     String?
+  phone     String?
+  specialty String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  courses   Course[]
+
+  @@map("trainers")
+}
+
+model Course {
+  id                   String       @id @default(uuid())
+  corId                String?      @unique
+  name                 String?      @default("بدون اسم")
+  courseName           String?      
+  eventName            String?      
+  startDate            DateTime?    
+  venue                String?      
+  room                 String?      
+  isRealEvent          Boolean?     @default(false)
+  numberOfParticipants Int?         @default(0)
+  numberOfCert         Int?         @default(0)
+  certificatesZip      String?      
+
+  companyId            String
+  company              Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  trainerId            String?
+  trainer              Trainer?     @relation(fields: [trainerId], references: [id])
+  enrollments          Enrollment[]
+  invoices             Invoice[]
+
+  @@map("courses")
+}
+
+model Trainee {
+  id          String       @id @default(uuid())
+  fullName    String
+  idNo        String?      // 👈 تم إضافة حقل الرقم القومي هنا لحل الأيرور الحالي فوراً
+  companyId   String
+  company     Company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  enrollments Enrollment[]
+
+  @@map("trainees")
+}
+
+model Enrollment {
+  id               String           @id @default(uuid())
+  attendanceStatus AttendanceStatus @default(REGISTERED)
+  certificateUrl   String?
+  qrCode           String?          @unique
+  enrolledAt       DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
+
+  courseId  String
+  course    Course  @relation(fields: [courseId], references: [id])
+
+  traineeId String
+  trainee   Trainee @relation(fields: [traineeId], references: [id])
+
+  @@unique([courseId, traineeId])
+  @@map("enrollments")
+}
+
+model Invoice {
+  id            String        @id @default(uuid())
+  poNumber      String?
+  amount        Float         @default(0)
+  paymentStatus PaymentStatus @default(PENDING)
+  issuedAt      DateTime      @default(now())
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+
+  courseId  String?
+  course    Course? @relation(fields: [courseId], references: [id])
+
+  @@map("invoices")
+}
+
+model UploadedSheet {
+  id        String   @id @default(uuid())
+  fileName  String
+  headers   String?  
+  rows      String?  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt      
+
+  @@map("uploaded_sheets")
+}

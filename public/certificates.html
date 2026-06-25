@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMS Central - Certificates</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body class="text-gray-800 flex min-h-screen">
+
+    <div id="sidebar-container" class="w-64 fixed h-full z-20"></div>
+
+    <div class="flex-1 ml-64 flex flex-col min-h-screen">
+        
+        <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+            <h2 class="text-xl font-bold text-gray-900 tracking-tight">Admin Control Center</h2>
+            <div class="flex-1 max-w-md mx-8 relative">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                <input type="text" placeholder="Search overall system..."
+                    class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#ab8038]/30 focus:border-[#ab8038] transition-all">
+            </div>
+            <div class="flex items-center gap-4">
+                <button class="relative p-1.5 rounded-full hover:bg-gray-100 transition-colors">
+                    <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
+                </button>
+                <button class="relative p-1.5 rounded-full hover:bg-gray-100 transition-colors">
+                    <i data-lucide="help-circle" class="w-5 h-5 text-gray-600"></i>
+                </button>
+                <div class="flex items-center gap-3 border-l pl-5 border-gray-200">
+                    <div class="text-right">
+                        <p class="text-sm font-bold text-gray-900 leading-none">Admin</p>
+                        <p class="text-[11px] text-gray-500 mt-1 font-medium">Support</p>
+                    </div>
+                    <img src="https://i.pravatar.cc/100?img=12"
+                        class="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100">
+                </div>
+            </div>
+        </header>
+
+        <main class="p-8 flex-1">
+            <div class="flex justify-between items-end mb-8">
+                <div>
+                    <h1 class="text-[28px] font-bold text-gray-900 tracking-tight mb-1">Certificates & Achievements</h1>
+                    <p class="text-gray-500 text-sm">Issue, track, and manage trainee certifications and training completions.</p>
+                </div>
+                <button class="flex items-center gap-2 px-5 py-2.5 bg-[#ab8038] hover:bg-[#96702f] text-white rounded-lg text-sm font-semibold transition-colors shadow-md">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Issue New Certificate
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                <div class="bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[130px]">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">TOTAL CERTIFICATES</h3>
+                        <div class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                            <i data-lucide="award" class="w-4 h-4 text-[#ab8038]"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <p id="stat-total-certs" class="text-[32px] font-extrabold text-gray-900 leading-none mb-1">12,450</p>
+                        <p class="text-sm text-gray-500 flex items-center gap-1"><i data-lucide="trending-up" class="w-3.5 h-3.5 text-emerald-600"></i> +8.2% from last year</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[130px]">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">PENDING VERIFICATIONS</h3>
+                        <div class="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center border border-amber-100">
+                            <i data-lucide="clock" class="w-4 h-4 text-amber-600"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <p id="stat-pending-certs" class="text-[32px] font-extrabold text-gray-900 leading-none mb-1">12</p>
+                        <p class="text-sm text-gray-500">Requires admin review</p>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm relative overflow-hidden flex flex-col justify-between min-h-[130px]">
+                    <div class="flex justify-between items-start">
+                        <h3 class="text-[11px] font-bold text-gray-500 uppercase tracking-widest">EXPIRED/RENEWALS</h3>
+                        <div class="w-8 h-8 rounded-full bg-rose-50 flex items-center justify-center border border-rose-100">
+                            <i data-lucide="refresh-cw" class="w-4 h-4 text-rose-600"></i>
+                        </div>
+                    </div>
+                    <div class="mt-4">
+                        <p id="stat-expired-certs" class="text-[32px] font-extrabold text-gray-900 leading-none mb-1">4</p>
+                        <p class="text-sm text-gray-500">Due for recertification</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white rounded-xl border border-gray-200/80 shadow-sm flex flex-col overflow-hidden">
+                
+                <div class="px-6 py-5 border-b border-gray-100 flex flex-wrap items-center justify-between gap-4">
+                    
+                    <div class="flex items-center gap-4">
+                        <h2 class="text-lg font-bold text-gray-900">Issued Certificates</h2>
+                        
+                        <div id="bulk-actions-container" class="hidden items-center gap-2 bg-amber-50/60 border border-amber-200 rounded-lg px-3 py-1.5 transition-all">
+                            <span class="text-xs font-semibold text-amber-800" id="selected-count">0 Selected</span>
+                            <button onclick="window.bulkDownloadCertificates()" class="flex items-center gap-1 px-2 py-1 bg-white border border-gray-200 rounded-md text-xs text-gray-700 hover:bg-gray-50 font-medium transition-colors shadow-sm">
+                                <i data-lucide="download" class="w-3.5 h-3.5 text-gray-500"></i> Download Selected
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-4">
+                        <div class="relative w-full sm:w-[250px]">
+                            <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                            <input id="certificates-search" type="text" placeholder="Search by trainee or ID..."
+                                class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#ab8038]/30">
+                        </div>
+                        
+                        <div class="flex items-center gap-2 border-l border-gray-200 pl-4">
+                            <button class="flex items-center gap-2 px-4 py-2 border border-gray-200 text-gray-600 hover:bg-gray-50 rounded-lg text-sm font-semibold transition-colors">
+                                <i data-lucide="filter" class="w-4 h-4"></i> Filter
+                            </button>
+                            <button onclick="window.downloadAllCertificates()" class="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white hover:bg-gray-800 rounded-lg text-sm font-semibold transition-colors shadow-sm">
+                                <i data-lucide="download-cloud" class="w-4 h-4"></i> Download All
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left whitespace-nowrap text-sm">
+                        <thead class="bg-gray-50/50 border-b border-gray-100">
+                            <tr>
+                                <th class="px-6 py-4 w-12">
+                                    <input type="checkbox" id="select-all-certs" class="rounded border-gray-300 text-[#ab8038] focus:ring-[#ab8038]/30 cursor-pointer w-4 h-4">
+                                </th>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">CERTIFICATE ID</th>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">TRAINEE NAME</th>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">COMPANY</th>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">COURSE</th>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">ISSUE DATE</th>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider">STATUS</th>
+                                <th class="px-6 py-4 text-[11px] font-bold text-gray-500 uppercase tracking-wider text-center">ACTIONS</th>
+                            </tr>
+                        </thead>
+                        <tbody id="certificates-table-body" class="divide-y divide-gray-50">
+                            </tbody>
+                    </table>
+                </div>
+
+                <div class="px-6 py-4 border-t border-gray-100 flex items-center justify-between bg-white text-sm">
+                    <span class="text-gray-500">Showing 1 to 5 of 12,450 entries</span>
+                    <div class="flex gap-1">
+                        <button class="px-3 py-1.5 border border-gray-200 rounded-md text-gray-500 hover:bg-gray-50 font-medium">Previous</button>
+                        <button class="px-3 py-1.5 border border-gray-900 bg-gray-900 text-white rounded-md font-medium">1</button>
+                        <button class="px-3 py-1.5 border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 font-medium">2</button>
+                        <button class="px-3 py-1.5 border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 font-medium">3</button>
+                        <span class="px-2 py-1.5 text-gray-400">...</span>
+                        <button class="px-3 py-1.5 border border-gray-200 rounded-md text-gray-700 hover:bg-gray-50 font-medium">Next</button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+<script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+<script type="module" src="js/app.js"></script>
+    <script src="/js/inject-sidebar.js"></script>
+</body>
+</html>

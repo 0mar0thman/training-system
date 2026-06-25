@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TMS Central - Trainees &amp; Courses</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+
+<body class="text-gray-800 flex min-h-screen">
+
+    <div id="sidebar-container" class="w-64 fixed h-full z-20"></div>
+
+    <div class="flex-1 ml-64 flex flex-col min-h-screen">
+
+        <header class="bg-white border-b border-gray-200 px-8 py-4 flex items-center justify-between sticky top-0 z-10">
+            <h2 class="text-xl font-bold text-gray-900 tracking-tight">Admin Control Center</h2>
+            <div class="flex-1 max-w-md mx-8 relative">
+                <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                <input id="global-search" type="text" placeholder="Search across trainees, courses..."
+                    class="w-full pl-10 pr-4 py-2.5 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#ab8038]/30 focus:border-[#ab8038] transition-all">
+            </div>
+            <div class="flex items-center gap-5">
+                <button class="relative p-1.5 rounded-full hover:bg-gray-100 transition-colors">
+                    <i data-lucide="bell" class="w-5 h-5 text-gray-600"></i>
+                    <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+                <div class="flex items-center gap-3 border-l pl-5 border-gray-200">
+                    <div class="text-right">
+                        <p class="text-sm font-bold text-gray-900 leading-none">Admin</p>
+                        <p class="text-xs text-gray-400 mt-1 font-medium">System Owner</p>
+                    </div>
+                    <img src="https://i.pravatar.cc/100?img=33"
+                        class="w-9 h-9 rounded-full object-cover ring-2 ring-gray-100">
+                </div>
+            </div>
+        </header>
+
+        <main class="p-8 flex-1">
+            <div class="mb-7 flex items-center justify-between">
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 tracking-tight">Trainees &amp; Courses</h1>
+                    <p class="text-gray-500 mt-1 text-sm">Manage enrollments, track attendance, and monitor billing status.</p>
+                </div>
+                <button id="btn-add-trainee"
+                    class="flex items-center gap-2 px-4 py-2.5 bg-[#ab8038] hover:bg-[#96702f] text-white rounded-lg text-sm font-bold shadow-sm transition-colors">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i> Add Trainee
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <div class="bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm flex items-center justify-between min-h-[110px] max-h-[110px]">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Trainees</p>
+                        <h3 id="stat-total-trainees" class="text-3xl font-extrabold text-gray-900 mt-2">0</h3>
+                    </div>
+                    <div class="p-3 bg-gray-50 rounded-xl text-gray-400">
+                        <i data-lucide="users" class="w-5 h-5"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm flex items-center justify-between min-h-[110px] max-h-[110px]">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Active Courses</p>
+                        <h3 id="stat-active-courses" class="text-3xl font-extrabold text-gray-900 mt-2">0</h3>
+                    </div>
+                    <div class="p-3 bg-amber-50 rounded-xl text-[#ab8038]">
+                        <i data-lucide="book-open" class="w-5 h-5"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm flex items-center justify-between min-h-[110px] max-h-[110px]">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Pending Certificates</p>
+                        <h3 id="stat-pending-certificates" class="text-3xl font-extrabold text-gray-900 mt-2">0</h3>
+                    </div>
+                    <div class="p-3 bg-amber-50 rounded-xl text-[#ab8038]">
+                        <i data-lucide="award" class="w-5 h-5"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-gray-200/80 shadow-sm flex items-center justify-between min-h-[110px] max-h-[110px]">
+                    <div>
+                        <p class="text-xs font-bold text-gray-400 uppercase tracking-wider">Unpaid Invoices</p>
+                        <h3 id="stat-unpaid-invoices" class="text-3xl font-extrabold text-rose-600 mt-2">0</h3>
+                    </div>
+                    <div class="p-3 bg-rose-50 rounded-xl text-rose-500">
+                        <i data-lucide="file-text" class="w-5 h-5"></i>
+                    </div>
+                </div>
+            </div>
+
+          <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex-1 flex flex-col">
+    <div class="p-5 border-b border-gray-100 flex flex-wrap items-center justify-between gap-4">
+        
+        <div class="relative w-full sm:w-80">
+            <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+            <input id="table-search" type="text" placeholder="Filter trainees by name or company..."
+                class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#ab8038]/30">
+        </div>
+
+        <div class="flex items-center">
+            <select id="date-filter" class="border border-gray-200 border-r-0 rounded-l-lg px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ab8038]/30 focus:border-[#ab8038] bg-white cursor-pointer h-[38px]">
+                <option value="all">All Dates</option>
+                <option value="today">Today</option>
+                <option value="48h">Last 48 Hours</option>
+                <option value="week">Last 7 Days</option>
+                <option value="month">This Month</option>
+                <option value="year">This Year</option>
+            </select>
+
+            <button class="flex items-center gap-1.5 px-3.5 py-2 border border-gray-200 bg-white text-gray-600 rounded-r-lg text-xs font-semibold hover:bg-gray-50 transition-colors h-[38px]">
+                <i data-lucide="download" class="w-3.5 h-3.5"></i> Export Trainees
+            </button>
+        </div>
+
+    </div>
+
+    <div class="overflow-x-auto flex-1">
+        <table class="w-full text-left border-collapse text-sm">
+            <thead>
+                <tr class="bg-gray-50 text-gray-400 text-[10px] font-extrabold uppercase tracking-widest border-b border-gray-100">
+                    <th class="px-6 py-4">ID</th>
+                    <th class="px-6 py-4">Trainee Name</th>
+                    <th class="px-6 py-4">Company</th>
+                    <th class="px-6 py-4">Course</th>
+                    <th class="px-6 py-4">Attendance</th>
+                    <th class="px-6 py-4">Payment</th>
+                    <th class="px-6 py-4 text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody id="trainees-table-body" class="divide-y divide-gray-100 font-medium text-gray-700">
+            </tbody>
+        </table>
+    </div>
+</div>
+        </main>
+    </div>
+
+    <script type="module" src="/js/app.js"></script>
+    <script src="/js/inject-sidebar.js"></script>
+</body>
+
+</html>
