@@ -21,7 +21,6 @@ const getCompanies = async (req, res) => {
 // إضافة شركة جديدة
 const createCompany = async (req, res) => {
   try {
-    // 👈 تم إضافة contactPerson و email هنا
     const { name, contactPerson, email } = req.body;
 
     if (!name) return res.status(400).json({ success: false, message: 'اسم الشركة مطلوب' });
@@ -46,7 +45,6 @@ const createCompany = async (req, res) => {
 const updateCompany = async (req, res) => {
   try {
     const { id } = req.params;
-    // 👈 تم إضافة contactPerson و email هنا عشان يستقبلهم من شاشة التعديل
     const { name, contactPerson, email } = req.body;
 
     const company = await prisma.company.update({

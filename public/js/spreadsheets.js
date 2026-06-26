@@ -1,38 +1,9 @@
 import { api } from './api.js';
+import { ui } from './ui.js';
 
 let currentSheetId = null;
 let currentHeaders = [];
 let currentRows = [];
-
-// ========== Toast ==========
-function showToast(msg, type = 'success') {
-    let c = document.getElementById('toast-container');
-    if (!c) { c = document.createElement('div'); c.id = 'toast-container'; c.className = 'fixed bottom-5 right-5 z-[9999] flex flex-col gap-2'; document.body.appendChild(c); }
-    const t = document.createElement('div');
-    const clr = { success: 'bg-emerald-600', error: 'bg-rose-600', warning: 'bg-amber-500' }[type] || 'bg-gray-800';
-    t.className = `flex items-center gap-2 px-4 py-3 rounded-xl shadow-lg text-sm font-semibold text-white ${clr} transition-all opacity-0 translate-y-2`;
-    t.textContent = msg;
-    c.appendChild(t);
-    requestAnimationFrame(() => t.classList.remove('opacity-0', 'translate-y-2'));
-    setTimeout(() => { t.classList.add('opacity-0', 'translate-y-2'); setTimeout(() => t.remove(), 300); }, 3500);
-}
-
-// ========== Confirm ==========
-function showConfirm(msg, cb) {
-    const ov = document.createElement('div');
-    ov.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm z-[9998] flex items-center justify-center p-4';
-    ov.innerHTML = `<div class="bg-white rounded-2xl shadow-2xl max-w-sm w-full p-6">
-        <h3 class="font-bold text-gray-900 mb-2">تأكيد</h3>
-        <p class="text-sm text-gray-600 mb-6">${msg}</p>
-        <div class="flex gap-3">
-            <button id="sc-cancel" class="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-semibold">إلغاء</button>
-            <button id="sc-ok" class="flex-1 px-4 py-2.5 bg-rose-600 text-white rounded-xl text-sm font-bold">تأكيد</button>
-        </div></div>`;
-    document.body.appendChild(ov);
-    document.getElementById('sc-cancel').onclick = () => ov.remove();
-    document.getElementById('sc-ok').onclick = () => { ov.remove(); cb(); };
-    ov.onclick = e => { if (e.target === ov) ov.remove(); };
-}
 
 // ========== Load all sheets ==========
 async function loadSheets() {
@@ -78,7 +49,7 @@ async function loadSheets() {
 // ========== Open a specific sheet ==========
 window.openSheet = async (id) => {
     const r = await api.getSheetById(id);
-    if (!r.success || !r.sheet) { showToast('فشل تحميل الجدول', 'error'); return; }
+    if (!r.success || !r.sheet) { ui.showToast('فشل تحميل الجدول', 'error'); return; }
 
     currentSheetId = id;
     currentHeaders = r.sheet.headers;
@@ -90,11 +61,30 @@ window.openSheet = async (id) => {
     document.getElementById('viewer-title').textContent = r.sheet.fileName;
     document.getElementById('viewer-meta').textContent = `${currentRows.length} rows · ${currentHeaders.length} columns · Uploaded ${new Date(r.sheet.createdAt).toLocaleDateString()}`;
 
-    renderSheetTable(currentRows);
+    renderSheetPage(1);
 };
 
 // ========== Render sheet table ==========
-function renderSheetTable(rows) {
+function renderSheetPage(page, data = null) {
+    const sourceData = data === null ? currentRows : data;
+    const ITEMS_PER_PAGE = 20;
+
+    const start = (page - 1) * ITEMS_PER_PAGE;
+    const end = start + ITEMS_PER_PAGE;
+    const paginatedItems = sourceData.slice(start, end);
+
+    renderSheetTable(paginatedItems, start);
+
+    ui.renderPagination({
+        containerId: "sheet-pagination",
+        currentPage: page,
+        totalItems: sourceData.length,
+        itemsPerPage: ITEMS_PER_PAGE,
+        onPageClick: (newPage) => renderSheetPage(newPage, data),
+    });
+}
+
+function renderSheetTable(rows, startIndex = 0) {
     const thead = document.getElementById('sheet-thead');
     const tbody = document.getElementById('sheet-tbody');
 
@@ -110,16 +100,16 @@ function renderSheetTable(rows) {
     }
 
     tbody.innerHTML = rows.map((row, idx) => {
-        const realIdx = currentRows.indexOf(row);
-        return `<tr class="hover:bg-gray-50/60 transition-colors group" data-row-index="${realIdx}">
-            <td class="px-4 py-3 text-gray-400 text-xs font-semibold">${realIdx + 1}</td>
+        const absoluteIndex = startIndex + idx;
+        return `<tr class="hover:bg-gray-50/60 transition-colors group" data-row-index="${absoluteIndex}">
+            <td class="px-4 py-3 text-gray-400 text-xs font-semibold">${absoluteIndex + 1}</td>
             ${currentHeaders.map(h => `<td class="px-4 py-3 text-sm text-gray-700 max-w-[200px] truncate" title="${String(row[h] || '')}">${row[h] || '—'}</td>`).join('')}
             <td class="px-4 py-3 text-right">
                 <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button onclick="openRowModal(${realIdx})" class="p-1.5 rounded-lg hover:bg-amber-50 text-gray-400 hover:text-amber-600 transition-colors">
+                    <button onclick="openRowModal(${absoluteIndex})" class="p-1.5 rounded-lg hover:bg-amber-50 text-gray-400 hover:text-amber-600 transition-colors">
                         <i data-lucide="pencil" class="w-3.5 h-3.5"></i>
                     </button>
-                    <button onclick="deleteRow(${realIdx})" class="p-1.5 rounded-lg hover:bg-rose-50 text-gray-400 hover:text-rose-600 transition-colors">
+                    <button onclick="deleteRow(${absoluteIndex})" class="p-1.5 rounded-lg hover:bg-rose-50 text-gray-400 hover:text-rose-600 transition-colors">
                         <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
                     </button>
                 </div>
@@ -136,7 +126,7 @@ document.getElementById('row-search')?.addEventListener('input', (e) => {
     const filtered = currentRows.filter(row =>
         Object.values(row).some(v => String(v || '').toLowerCase().includes(q))
     );
-    renderSheetTable(filtered);
+    renderSheetPage(1, filtered);
 });
 
 document.getElementById('sheet-search')?.addEventListener('input', (e) => {
@@ -145,7 +135,7 @@ document.getElementById('sheet-search')?.addEventListener('input', (e) => {
         const filtered = currentRows.filter(row =>
             Object.values(row).some(v => String(v || '').toLowerCase().includes(q))
         );
-        renderSheetTable(filtered);
+        renderSheetPage(1, filtered);
     }
 });
 
@@ -202,35 +192,35 @@ window.openRowModal = (rowIndex = null) => {
         let r;
         if (editing) {
             r = await api.updateSheetRow(currentSheetId, rowIndex, newRow);
-            if (r.success) { currentRows[rowIndex] = newRow; showToast('تم تعديل الصف', 'success'); }
+            if (r.success) { currentRows[rowIndex] = newRow; ui.showToast('تم تعديل الصف', 'success'); }
         } else {
             r = await api.addSheetRow(currentSheetId, newRow);
-            if (r.success) { currentRows.push(newRow); showToast('تم إضافة الصف', 'success'); }
+            if (r.success) { currentRows.push(newRow); ui.showToast('تم إضافة الصف', 'success'); }
         }
 
-        if (r.success) { close(); renderSheetTable(currentRows); }
-        else showToast(r.message || 'حدث خطأ', 'error');
+        if (r.success) { close(); renderSheetPage(1); }
+        else ui.showToast(r.message || 'حدث خطأ', 'error');
     };
 };
 
 // ========== Delete Row ==========
 window.deleteRow = (rowIndex) => {
-    showConfirm(`هل تريد حذف الصف رقم ${rowIndex + 1}؟`, async () => {
+    ui.showConfirm(`هل تريد حذف الصف رقم ${rowIndex + 1}؟`, async () => {
         const r = await api.deleteSheetRow(currentSheetId, rowIndex);
         if (r.success) {
             currentRows.splice(rowIndex, 1);
-            showToast('تم حذف الصف', 'success');
-            renderSheetTable(currentRows);
-        } else showToast(r.message || 'فشل الحذف', 'error');
+            ui.showToast('تم حذف الصف', 'success');
+            renderSheetPage(1);
+        } else ui.showToast(r.message || 'فشل الحذف', 'error');
     });
 };
 
 // ========== Delete entire sheet ==========
 window.deleteSheet = (id, name) => {
-    showConfirm(`هل تريد حذف ملف "${name}" بالكامل؟`, async () => {
+    ui.showConfirm(`هل تريد حذف ملف "${name}" بالكامل؟`, async () => {
         const r = await api.deleteSheet(id);
-        if (r.success) { showToast('تم حذف الملف', 'success'); await loadSheets(); }
-        else showToast(r.message || 'فشل الحذف', 'error');
+        if (r.success) { ui.showToast('تم حذف الملف', 'success'); await loadSheets(); }
+        else ui.showToast(r.message || 'فشل الحذف', 'error');
     });
 };
 

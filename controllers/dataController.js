@@ -45,7 +45,6 @@ const getCourses = async (req, res) => {
     try {
         const { search, isReal } = req.query;
 
-        // إعداد شروط البحث الذكي
         let whereCondition = {};
 
         if (search) {
@@ -81,7 +80,6 @@ const getTrainees = async (req, res) => {
         const trainees = await prisma.trainee.findMany({
             include: {
                 company: { select: { name: true } },
-                // السطر الجديد اللي بيعد الكورسات لكل متدرب
                 _count: { select: { enrollments: true } }
             },
             orderBy: { fullName: 'asc' }
@@ -98,7 +96,6 @@ const getCourseStats = async (req, res) => {
         const ongoingCount = await prisma.course.count({ where: { startDate: { lte: new Date() } } });
         const upcomingCount = await prisma.course.count({ where: { startDate: { gt: new Date() } } });
         
-        // Count unique trainers
         const uniqueTrainers = await prisma.course.findMany({
             select: { trainerName: true },
             distinct: ['trainerName'],
@@ -108,7 +105,7 @@ const getCourseStats = async (req, res) => {
         res.json({
             success: true,
             stats: {
-                ongoingCourses: ongoingCount || 24, // Fallback to 24 if 0 for demo
+                ongoingCourses: ongoingCount || 24,
                 upcomingScheduled: upcomingCount || 18,
                 assignedTrainers: uniqueTrainers.length || 42
             }
@@ -150,7 +147,7 @@ const getCourseDetails = async (req, res) => {
 const updateAttendance = async (req, res) => {
     try {
         const { courseId } = req.params;
-        const { attendanceData } = req.body; // Array of { traineeId, status }
+        const { attendanceData } = req.body;
 
         const updates = attendanceData.map(record => 
             prisma.enrollment.update({

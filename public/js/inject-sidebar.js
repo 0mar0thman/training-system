@@ -9,7 +9,7 @@
     // ── Authentication Check ───────────────────────────────────────
     const currentPath = window.location.pathname;
     const token = localStorage.getItem('token');
-    const userRole = localStorage.getItem('user_role') || 'ADMIN'; // Default to ADMIN for demo fallback
+    const userRole = localStorage.getItem('user_role') || 'ADMIN';
 
     if (!token && currentPath !== '/login' && currentPath !== '/register') {
         window.location.href = '/login';
@@ -50,9 +50,8 @@
             container.querySelectorAll('.sidebar-item[data-path]').forEach(link => {
                 const linkPath = link.getAttribute('data-path');
 
-                // Check if this path is allowed for this role
                 if (!allowedPaths.includes(linkPath)) {
-                    link.remove(); // Hide link
+                    link.remove();
                     return;
                 }
 

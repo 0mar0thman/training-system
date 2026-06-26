@@ -30,12 +30,10 @@ function showToast(message, type = 'success') {
 
     if (window.lucide) lucide.createIcons();
 
-    // Animate in
     requestAnimationFrame(() => {
         toast.classList.remove('translate-y-4', 'opacity-0');
     });
 
-    // Auto remove
     setTimeout(() => {
         toast.classList.add('translate-y-4', 'opacity-0');
         setTimeout(() => toast.remove(), 300);
@@ -80,6 +78,76 @@ export const ui = {
     showToast,
     showConfirm,
 
+    // ========== Pagination Renderer ==========
+    renderPagination({ containerId, currentPage, totalItems, itemsPerPage, onPageClick }) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        const totalPages = Math.ceil(totalItems / itemsPerPage);
+        const startItem = (currentPage - 1) * itemsPerPage + 1;
+        const endItem = Math.min(currentPage * itemsPerPage, totalItems);
+
+        if (totalPages <= 1) {
+            container.innerHTML = `<span class="text-gray-500">Showing ${totalItems} entries</span>`;
+            return;
+        }
+
+        let paginationHTML = `
+            <span class="text-gray-500">Showing ${startItem} to ${endItem} of ${totalItems} entries</span>
+            <div class="flex gap-1">
+        `;
+
+        paginationHTML += `
+            <button data-page="${currentPage - 1}" class="page-btn px-3 py-1.5 border border-gray-200 rounded-md text-gray-500 hover:bg-gray-50 font-medium ${currentPage === 1 ? 'opacity-50 cursor-not-allowed' : ''}" ${currentPage === 1 ? 'disabled' : ''}>
+                Previous
+            </button>
+        `;
+
+        const pageNumbers = [];
+        if (totalPages <= 7) {
+            for (let i = 1; i <= totalPages; i++) pageNumbers.push(i);
+        } else {
+            pageNumbers.push(1);
+            if (currentPage > 3) pageNumbers.push('...');
+            
+            let start = Math.max(2, currentPage - 1);
+            let end = Math.min(totalPages - 1, currentPage + 1);
+
+            if (currentPage <= 3) end = 4;
+            if (currentPage >= totalPages - 2) start = totalPages - 3;
+
+            for (let i = start; i <= end; i++) pageNumbers.push(i);
+
+            if (currentPage < totalPages - 2) pageNumbers.push('...');
+            pageNumbers.push(totalPages);
+        }
+
+        pageNumbers.forEach(num => {
+            if (num === '...') {
+                paginationHTML += `<span class="px-3 py-1.5 text-gray-400">...</span>`;
+            } else {
+                paginationHTML += `
+                    <button data-page="${num}" class="page-btn px-3 py-1.5 border ${num === currentPage ? 'border-gray-900 bg-gray-900 text-white' : 'border-gray-200 text-gray-700 hover:bg-gray-50'} rounded-md font-medium">
+                        ${num}
+                    </button>
+                `;
+            }
+        });
+
+        paginationHTML += `
+            <button data-page="${currentPage + 1}" class="page-btn px-3 py-1.5 border border-gray-200 rounded-md text-gray-500 hover:bg-gray-50 font-medium ${currentPage === totalPages ? 'opacity-50 cursor-not-allowed' : ''}" ${currentPage === totalPages ? 'disabled' : ''}>
+                Next
+            </button>
+        `;
+
+        paginationHTML += `</div>`;
+        container.innerHTML = paginationHTML;
+
+        container.querySelectorAll('.page-btn').forEach(btn => {
+            btn.addEventListener('click', () => onPageClick(parseInt(btn.dataset.page)));
+        });
+    },
+
     // ========== Dashboard Stats ==========
     updateDashboardStats(stats) {
         if (!stats) return;
@@ -99,7 +167,7 @@ export const ui = {
         const elements = {
             'stat-total-trainees': stats.trainees,
             'stat-active-courses': stats.courses,
-            'stat-pending-certificates': 12,
+            'stat-pending-certificates': stats.pendingCertificates || 0,
             'stat-unpaid-invoices': stats.pendingInvoices || 0
         };
         for (const [id, value] of Object.entries(elements)) {
@@ -170,7 +238,6 @@ export const ui = {
         const tbody = document.getElementById('trainees-table-body');
         if (!tbody) return;
 
-        // 🟢 حساب الفواتير غير المدفوعة والشهادات المعلقة من الداتا الحقيقية
         if (trainees) {
             const unpaidCount = trainees.filter(t => (t.paymentStatus || 'PENDING').toUpperCase() !== 'PAID').length;
             const unpaidEl = document.getElementById('stat-unpaid-invoices');
@@ -239,23 +306,12 @@ export const ui = {
                             ${paymentDisplay}
                         </span>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <button onclick="window.openTraineeModal('${tData}')" title="تعديل" class="p-1.5 rounded-lg hover:bg-amber-50 text-gray-400 hover:text-amber-600 transition-colors">
-                                <i data-lucide="pencil" class="w-4 h-4"></i>
-                            </button>
-                            <button onclick="window.deleteTrainee('${t.id}', '${traineeName.replace(/'/g, "\\\'")}')" title="حذف" class="p-1.5 rounded-lg hover:bg-rose-50 text-gray-400 hover:text-rose-600 transition-colors">
-                                <i data-lucide="trash-2" class="w-4 h-4"></i>
-                            </button>
-                        </div>
-                    </td>
                 </tr>
             `;
         }).join('');
 
         if (window.lucide) lucide.createIcons();
 
-        // 🟢 إرسال الداتا الحقيقية لصفحة الشهادات أوتوماتيك
         if (typeof window.renderCertificatesWithData === 'function') {
             window.renderCertificatesWithData(trainees);
         }
@@ -344,7 +400,6 @@ export const ui = {
 
         if (window.lucide) lucide.createIcons();
 
-        // تشغيل الـ Checkboxes
         const selectAll = document.getElementById("select-all-certs");
         const bulkContainer = document.getElementById("bulk-actions-container");
         const selectedCountEl = document.getElementById("selected-count");

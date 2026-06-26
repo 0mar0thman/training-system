@@ -12,18 +12,15 @@ const uploadExcel = async (req, res) => {
         const sheetName = workbook.SheetNames[0];
         const worksheet = workbook.Sheets[sheetName];
 
-        // 1. Read raw rows as array of arrays
         const rawRows = xlsx.utils.sheet_to_json(worksheet, { header: 1 });
         
         if (rawRows.length === 0) {
             return res.status(400).json({ success: false, message: 'ملف الإكسيل فارغ!' });
         }
 
-        // 2. Dynamically determine the header row index
         let headerRowIndex = 0;
         let foundStandardHeader = false;
         
-        // Search first 15 rows for typical headers
         for (let i = 0; i < Math.min(rawRows.length, 15); i++) {
             const row = rawRows[i];
             if (row && row.some(cell => {
@@ -36,7 +33,6 @@ const uploadExcel = async (req, res) => {
             }
         }
 
-        // If standard header row wasn't found, find first row with > 1 non-empty cells
         if (!foundStandardHeader) {
             for (let i = 0; i < rawRows.length; i++) {
                 const nonActiveCells = (rawRows[i] || []).filter(c => c !== null && c !== undefined && String(c).trim() !== '');
@@ -47,22 +43,20 @@ const uploadExcel = async (req, res) => {
             }
         }
 
-        // Extract headers and map empty names
         const rawHeaders = rawRows[headerRowIndex] || [];
         const headers = rawHeaders
             .map((h, idx) => h ? String(h).trim() : `Column_${idx + 1}`)
-            .filter((h, idx, self) => h !== '' && self.indexOf(h) === idx); // unique & non-empty
+            .filter((h, idx, self) => h !== '' && self.indexOf(h) === idx);
 
         if (headers.length === 0) {
             return res.status(400).json({ success: false, message: 'لم يتم العثور على أعمدة صالحة في ملف الإكسيل!' });
         }
 
-        // Extract rows starting after headerRowIndex
         const rows = [];
         for (let i = headerRowIndex + 1; i < rawRows.length; i++) {
             const rowData = rawRows[i];
             if (!rowData || rowData.filter(cell => cell !== null && cell !== undefined && String(cell).trim() !== '').length === 0) {
-                continue; // skip completely empty rows
+                continue;
             }
 
             const rowObj = {};
@@ -71,14 +65,12 @@ const uploadExcel = async (req, res) => {
                 if (cellValue === null || cellValue === undefined) {
                     rowObj[header] = "";
                 } else {
-                    // Check if it's a date serial number and handle
                     rowObj[header] = cellValue;
                 }
             });
             rows.push(rowObj);
         }
 
-        // 3. Save to UploadedSheet for dynamic display
         const fileName = req.file.originalname || 'uploaded_sheet.xlsx';
         const dynamicSheet = await prisma.uploadedSheet.create({
             data: {
@@ -88,7 +80,6 @@ const uploadExcel = async (req, res) => {
             }
         });
 
-        // 4. Check if standard training system columns are present for relational importing
         const hasStandardColumns = headers.includes('Customer') && (headers.includes('Course Name:') || headers.includes('Course Name'));
 
         let importedRows = 0;
@@ -142,14 +133,12 @@ const uploadExcel = async (req, res) => {
                     continue;
                 }
 
-                // Upsert Company
                 const company = await prisma.company.upsert({
                     where: { name: String(customerName).trim() },
                     update: {},
                     create: { name: String(customerName).trim() }
                 });
 
-                // Upsert Course
                 let course;
                 if (corId) {
                     const existing = await prisma.course.findUnique({ where: { corId } });
@@ -202,7 +191,6 @@ const uploadExcel = async (req, res) => {
                     }
                 }
 
-                // Invoice / PO creation
                 if (poNumber) {
                     const existingInvoice = await prisma.invoice.findFirst({
                         where: {
@@ -224,7 +212,6 @@ const uploadExcel = async (req, res) => {
                     }
                 }
 
-                // Process Trainees / Enrollments
                 let rawParticipants = row['Participants With IDNO:'] || row['Participants With IDNO'] || row['Participants:'] || row['Participants'];
                 if (rawParticipants) {
                     let traineesList = String(rawParticipants).split(/[,،\n]|(?=\d+- )/);

@@ -10,6 +10,10 @@ document.addEventListener("DOMContentLoaded", () => {
     const isCourses = path === '/courses' || !!document.getElementById('courses-grid');
     const isCertificates = path === '/certificates' || !!document.getElementById('certificates-table-body');
 
+    // Pagination State
+    let currentPage = 1;
+    const ITEMS_PER_PAGE = 10;
+
     // ========== Clients Page ==========
     async function initClients() {
         const stats = await api.getDashboardStats();
@@ -85,7 +89,7 @@ document.addEventListener("DOMContentLoaded", () => {
             let company = null;
             try {
                 company = typeof companyRaw === 'string' ? JSON.parse(companyRaw.replace(/&quot;/g, '"')) : companyRaw;
-            } catch (e) {}
+            } catch (e) { }
             if (!company) {
                 ui.showToast('Company data not found.', 'error');
                 return;
@@ -134,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     amount: parseFloat(document.getElementById('comp-inv-amount').value),
                     issuedAt: new Date(document.getElementById('comp-inv-date').value).toISOString(),
                     companyId: company.id,
-                    paymentStatus: 'PENDING',
+                    paymentStatus: 'INVOICED',
                 };
                 if (!data.amount || !data.issuedAt) {
                     ui.showToast('Amount and Invoice Date are required fields', 'warning');
@@ -433,73 +437,156 @@ document.addEventListener("DOMContentLoaded", () => {
                     ui.renderCertificatesTable(filtered);
                 });
             }
-        }
 
-        // ===== دالة توليد وطباعة الشهادة =====
-        window.downloadSingleCert = async function(traineeId, traineeName) {
-            try {
-                ui.showToast(`⏳ جاري توليد الشهادة للمتدرب: ${traineeName}...`, 'info');
+            // ========== 🚀 دالة توليد وطباعة الشهادة (مع QR Code وإحداثياتك المظبوطة) ==========
+            window.downloadSingleCert = async function (traineeId, traineeName) {
+                try {
+                    ui.showToast(`⏳ جاري توليد الشهادة للمتدرب: ${traineeName}...`, 'info');
 
-                const trainee = r.trainees.find(t => t.id === traineeId);
-                if (!trainee) {
-                    ui.showToast('لم يتم العثور على بيانات المتدرب', 'error');
+                    // 1. جلب بيانات المتدرب ومكانه في الجدول (عشان رقم الشهادة المتسلسل)
+                    const traineeIndex = r.trainees.findIndex(t => t.id === traineeId);
+                    const trainee = r.trainees[traineeIndex];
+
+                    if (!trainee) {
+                        ui.showToast('لم يتم العثور على بيانات المتدرب', 'error');
+                        return;
+                    }
+
+                    // 2. تحميل ملف الشهادة الفاضي من مجلد assets
+                    const existingPdfBytes = await fetch('/assets/Mas_Certificate.pdf').then(res => res.arrayBuffer());
+
+                    // 3. تجهيز مكتبة الطباعة والخطوط
+                    const { PDFDocument, rgb, StandardFonts } = window.PDFLib;
+                    const pdfDoc = await PDFDocument.load(existingPdfBytes);
+                    const helveticaBold = await pdfDoc.embedFont(StandardFonts.HelveticaBold);
+
+                    const pages = pdfDoc.getPages();
+                    const firstPage = pages[0];
+
+                    const textColor = rgb(0.1, 0.1, 0.1);
+
+                    const today = new Date();
+                    const issueDate = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear()}`;
+                    const expDate = `${today.getDate()}-${today.getMonth() + 1}-${today.getFullYear() + 2}`;
+
+                    const certNumber = `MAS_${String(traineeIndex + 1).padStart(3, '0')}`;
+
+                    const cleanTraineeName = traineeName.replace(/^-\s*/, '').trim();
+
+                    // =====================================================
+                    // 🔲 4. توليد الـ QR Code كصورة
+                    // =====================================================
+                    let qrImage;
+                    try {
+                        const targetId = trainee.idNo || trainee.id;
+                        const verifyUrl = `${window.location.origin}/verify.html?id=${targetId}`;
+                        const qrDataUrl = await QRCode.toDataURL(verifyUrl, { margin: 1, width: 150 });
+                        const qrImageBytes = await fetch(qrDataUrl).then(res => res.arrayBuffer());
+                        qrImage = await pdfDoc.embedPng(qrImageBytes);
+                    } catch (qrErr) {
+                        console.error("مشكلة في توليد الـ QR Code:", qrErr);
+                        ui.showToast('⚠️ تم توليد الشهادة بدون QR Code لوجود مشكلة في المكتبة', 'warning');
+                    }
+
+                    // -----------------------------------------------------
+                    // ✏️ طباعة البيانات على الشهادة
+                    // -----------------------------------------------------
+
+                    // 1. اسم المتدرب (كبير - يسار)
+                    firstPage.drawText(cleanTraineeName.toUpperCase(), {
+                        x: 60, y: 330, size: 18, font: helveticaBold, color: textColor
+                    });
+
+                    // 2. رقم الهوية ID Number (يمين)
+                    const idNum = trainee.idNo || 'N/A';
+                    firstPage.drawText(String(idNum), {
+                        x: 605, y: 330, size: 14, font: helveticaBold, color: textColor
+                    });
+
+                    // 3. اسم الكورس (يسار)
+                    firstPage.drawText((trainee.courseName || 'H2S & SCBA SAFETY COURSE').toUpperCase(), {
+                        x: 60, y: 285, size: 14, font: helveticaBold, color: textColor
+                    });
+
+                    // ======= العمود الأيسر (Left Column) =======
+                    const leftX = 80;
+
+                    firstPage.drawText(issueDate, { x: 60, y: 247, size: 12, font: helveticaBold, color: textColor });
+                    firstPage.drawText('MAS TRAINING CENTER', { x: 60, y: 212, size: 12, font: helveticaBold, color: textColor });
+                    firstPage.drawText('Mostafa Mohamed', { x: 60, y: 170, size: 12, font: helveticaBold, color: textColor });
+                    firstPage.drawText('Yousef Al Faisal', { x: 120, y: 108, size: 12, font: helveticaBold, color: textColor });
+
+                    // ======= العمود الأيمن (Right Column) =======
+                    const rightX = 520;
+
+                    firstPage.drawText(expDate, { x: 460, y: 247, size: 12, font: helveticaBold, color: textColor });
+                    firstPage.drawText('TVTV : 842255591812', { x: 460, y: 212, size: 12, font: helveticaBold, color: textColor });
+                    firstPage.drawText('+966 13 346 3937', { x: 460, y: 170, size: 12, font: helveticaBold, color: textColor });
+                    firstPage.drawText(certNumber, { x: rightX + 30, y: 108, size: 12, font: helveticaBold, color: textColor });
+
+                    // =====================================================
+                    // 🔲 5. لزق الـ QR Code على الشهادة
+                    // =====================================================
+                    if (qrImage) {
+                        firstPage.drawImage(qrImage, {
+                            x: 700, y: 380, width: 75, height: 75
+                        });
+                    }
+
+                    // -----------------------------------------------------
+                    // 7. حفظ وتنزيل الملف للمستخدم
+                    // -----------------------------------------------------
+                    const pdfBytes = await pdfDoc.save();
+                    const blob = new Blob([pdfBytes], { type: "application/pdf" });
+                    const objectUrl = window.URL.createObjectURL(blob);
+
+                    const link = document.createElement('a');
+                    link.href = objectUrl;
+                    link.download = `${certNumber}_${cleanTraineeName}.pdf`;
+
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    window.URL.revokeObjectURL(objectUrl);
+
+                } catch (error) {
+                    console.error("Error generating PDF:", error);
+                    ui.showToast('❌ حدث خطأ أثناء توليد الشهادة', 'error');
+                }
+            };
+
+            // ========== 🚀 دالة التنزيل المتعدد للشهادات المختارة ==========
+            window.downloadSelectedCerts = async function () {
+                const selectedCheckboxes = document.querySelectorAll('tbody input[type="checkbox"]:checked');
+
+                if (selectedCheckboxes.length === 0) {
+                    ui.showToast('⚠️ يرجى تحديد متدرب واحد على الأقل!', 'warning');
                     return;
                 }
 
-                const existingPdfBytes = await fetch('/assets/Mas_Certificate.pdf').then(res => res.arrayBuffer());
+                ui.showToast(`⏳ جاري تحضير ${selectedCheckboxes.length} شهادات... يرجى الانتظار.`, 'info');
 
-                const { PDFDocument, rgb } = window.PDFLib;
-                const pdfDoc = await PDFDocument.load(existingPdfBytes);
-                const pages = pdfDoc.getPages();
-                const firstPage = pages[0];
+                let downloadedCount = 0;
 
-                const { height } = firstPage.getSize();
-                const textColor = rgb(0.2, 0.2, 0.2);
+                for (let i = 0; i < selectedCheckboxes.length; i++) {
+                    const checkbox = selectedCheckboxes[i];
+                    const traineeId = String(checkbox.value);
 
-                firstPage.drawText(traineeName, {
-                    x: 350,
-                    y: height - 300,
-                    size: 24,
-                    color: textColor
-                });
+                    const trainee = r.trainees.find(t => String(t.id) === traineeId);
 
-                firstPage.drawText(trainee.courseName || 'N/A', {
-                    x: 350,
-                    y: height - 380,
-                    size: 18,
-                    color: textColor
-                });
+                    if (trainee) {
+                        const traineeName = trainee.fullName || trainee.name || 'Trainee';
+                        await window.downloadSingleCert(trainee.id, traineeName);
+                        downloadedCount++;
+                        await new Promise(resolve => setTimeout(resolve, 2000));
+                    }
+                }
 
-                const displayDate = trainee.createdAt ? new Date(trainee.createdAt).toLocaleDateString() : new Date().toLocaleDateString();
-                firstPage.drawText(displayDate, {
-                    x: 200,
-                    y: height - 480,
-                    size: 14,
-                    color: textColor
-                });
-
-                const certNum = trainee.idNo ? `MAS-${trainee.idNo}` : `MAS-${trainee.id.substring(0,6)}`;
-                firstPage.drawText(certNum, {
-                    x: 550,
-                    y: height - 480,
-                    size: 14,
-                    color: textColor
-                });
-
-                const pdfBytes = await pdfDoc.save();
-                const blob = new Blob([pdfBytes], { type: "application/pdf" });
-                const link = document.createElement('a');
-                link.href = window.URL.createObjectURL(blob);
-                link.download = `MAS_Certificate_${traineeName}.pdf`;
-                link.click();
-
-                ui.showToast('✅ تم تنزيل الشهادة بنجاح!', 'success');
-
-            } catch (error) {
-                console.error("Error generating PDF:", error);
-                ui.showToast('❌ حدث خطأ أثناء توليد الشهادة', 'error');
-            }
-        };
+                if (downloadedCount > 0) {
+                    ui.showToast(`✅ تم تنزيل ${downloadedCount} شهادة بنجاح!`, 'success');
+                }
+            };
+        }
     }
 
     // ========== Init ==========

@@ -23,10 +23,8 @@ const getTrainees = async (req, res) => {
 
     // 🔥 تحويل البيانات إلى هيكل مسطح (flat) يسهل على الواجهة الأمامية استخدامه
     const formattedTrainees = trainees.map(trainee => {
-      // افترض أن المتدرب لديه تسجيل واحد فقط (آخر تسجيل)
       const latestEnrollment = trainee.enrollments?.[0] || null;
 
-      // الحصول على حالة الدفع من الفاتورة
       let paymentStatus = 'N/A';
       if (latestEnrollment?.course?.invoices?.length > 0) {
         paymentStatus = latestEnrollment.course.invoices[0].paymentStatus;
@@ -42,7 +40,6 @@ const getTrainees = async (req, res) => {
           'Not enrolled',
         attendanceStatus: latestEnrollment?.attendanceStatus || 'Not enrolled',
         paymentStatus: paymentStatus,
-        // احتفظ بالبيانات الأصلية للاستخدامات الأخرى
         raw: trainee
       };
     });

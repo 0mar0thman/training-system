@@ -93,50 +93,49 @@
                 </div>
             </div>
 
-          <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex-1 flex flex-col">
-    <div class="p-5 border-b border-gray-100 flex flex-wrap items-center justify-between gap-4">
-        
-        <div class="relative w-full sm:w-80">
-            <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
-            <input id="table-search" type="text" placeholder="Filter trainees by name or company..."
-                class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#ab8038]/30">
-        </div>
+            <div class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden flex-1 flex flex-col">
+                <div class="p-5 border-b border-gray-100 flex flex-wrap items-center justify-between gap-4">
+                    
+                    <div class="relative w-full sm:w-80">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400"></i>
+                        <input id="table-search" type="text" placeholder="Filter trainees by name or company..."
+                            class="w-full pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#ab8038]/30">
+                    </div>
 
-        <div class="flex items-center">
-            <select id="date-filter" class="border border-gray-200 border-r-0 rounded-l-lg px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ab8038]/30 focus:border-[#ab8038] bg-white cursor-pointer h-[38px]">
-                <option value="all">All Dates</option>
-                <option value="today">Today</option>
-                <option value="48h">Last 48 Hours</option>
-                <option value="week">Last 7 Days</option>
-                <option value="month">This Month</option>
-                <option value="year">This Year</option>
-            </select>
+                    <div class="flex items-center">
+                        <select id="date-filter" class="border border-gray-200 border-r-0 rounded-l-lg px-4 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-[#ab8038]/30 focus:border-[#ab8038] bg-white cursor-pointer h-[38px]">
+                            <option value="all">All Dates</option>
+                            <option value="today">Today</option>
+                            <option value="48h">Last 48 Hours</option>
+                            <option value="week">Last 7 Days</option>
+                            <option value="month">This Month</option>
+                            <option value="year">This Year</option>
+                        </select>
 
-            <button class="flex items-center gap-1.5 px-3.5 py-2 border border-gray-200 bg-white text-gray-600 rounded-r-lg text-xs font-semibold hover:bg-gray-50 transition-colors h-[38px]">
-                <i data-lucide="download" class="w-3.5 h-3.5"></i> Export Trainees
-            </button>
-        </div>
+                        <button id="btn-export-trainees" class="flex items-center gap-1.5 px-3.5 py-2 border border-gray-200 bg-white text-gray-600 rounded-r-lg text-xs font-semibold hover:bg-gray-50 transition-colors h-[38px]">
+                            <i data-lucide="download" class="w-3.5 h-3.5"></i> Export Trainees
+                        </button>
+                    </div>
 
-    </div>
+                </div>
 
-    <div class="overflow-x-auto flex-1">
-        <table class="w-full text-left border-collapse text-sm">
-            <thead>
-                <tr class="bg-gray-50 text-gray-400 text-[10px] font-extrabold uppercase tracking-widest border-b border-gray-100">
-                    <th class="px-6 py-4">ID</th>
-                    <th class="px-6 py-4">Trainee Name</th>
-                    <th class="px-6 py-4">Company</th>
-                    <th class="px-6 py-4">Course</th>
-                    <th class="px-6 py-4">Attendance</th>
-                    <th class="px-6 py-4">Payment</th>
-                    <th class="px-6 py-4 text-center">Actions</th>
-                </tr>
-            </thead>
-            <tbody id="trainees-table-body" class="divide-y divide-gray-100 font-medium text-gray-700">
-            </tbody>
-        </table>
-    </div>
-</div>
+                <div class="overflow-x-auto flex-1">
+                    <table class="w-full text-left border-collapse text-sm">
+                        <thead>
+                            <tr class="bg-gray-50 text-gray-400 text-[10px] font-extrabold uppercase tracking-widest border-b border-gray-100">
+                                <th class="px-6 py-4">ID</th>
+                                <th class="px-6 py-4">Trainee Name</th>
+                                <th class="px-6 py-4">Company</th>
+                                <th class="px-6 py-4">Course</th>
+                                <th class="px-6 py-4">Attendance</th>
+                                <th class="px-6 py-4">Payment</th>
+                            </tr>
+                        </thead>
+                        <tbody id="trainees-table-body" class="divide-y divide-gray-100 font-medium text-gray-700">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </main>
     </div>
 

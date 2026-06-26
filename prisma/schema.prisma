@@ -25,7 +25,7 @@ enum AttendanceStatus {
 
 enum PaymentStatus {
   PENDING
-  PAID
+  INVOICED
   PARTIALLY_PAID
   OVERDUE
   CANCELLED

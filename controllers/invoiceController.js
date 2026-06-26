@@ -19,7 +19,6 @@ const getInvoices = async (req, res) => {
 const createInvoice = async (req, res) => {
   try {
     const data = req.body;
-    // Ensure amount is a float and issuedAt is a valid date
     const invoiceData = {
       ...data,
       amount: parseFloat(data.amount),
@@ -46,7 +45,6 @@ const updateInvoicePayment = async (req, res) => {
   }
 };
 
-// تحديث تفاصيل الفاتورة كاملة
 const updateInvoice = async (req, res) => {
   try {
     const { id } = req.params;
@@ -69,7 +67,6 @@ const updateInvoice = async (req, res) => {
   }
 };
 
-// حذف فاتورة
 const deleteInvoice = async (req, res) => {
   try {
     const { id } = req.params;
